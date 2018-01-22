@@ -19,7 +19,7 @@ static readonly HttpClient HttpClient = new HttpClient
     Timeout = TimeSpan.FromSeconds(10)
 };
 
-public static async Task Run(HttpRequestMessage req, TraceWriter log)
+public static async Task<string> Run(HttpRequestMessage req, TraceWriter log)
 {
     IEnumerable<string> headers;
     if (!req.Headers.TryGetValues("X-Line-Signature", out headers))
@@ -67,6 +67,8 @@ public static async Task Run(HttpRequestMessage req, TraceWriter log)
     {
         await HttpClient.PostAsync(SlackWebhookUrl, json);
     }
+
+    return content;
 }
 
 public class SlackMessage
