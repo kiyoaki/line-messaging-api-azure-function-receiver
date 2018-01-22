@@ -14,7 +14,7 @@ using Utf8Json;
 public static async Task<string> Run(HttpRequestMessage req, TraceWriter log)
 {
     string content;
-    if (!Line.IsValidRequest(req, log, out content))
+    if (!await Line.IsValidRequest(req, log, out content))
     {
         return null;
     }
