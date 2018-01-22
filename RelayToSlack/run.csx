@@ -14,12 +14,12 @@ using Utf8Json;
 public static async Task<string> Run(HttpRequestMessage req, TraceWriter log)
 {
     string content;
-    if (!Line.IsValidRequest(req, out content))
+    if (!Line.IsValidRequest(req, log, out content))
     {
         return null;
     }
 
-    await Slack.Post(content);
+    await Slack.Post(content, log);
 
     return content;
 }
@@ -28,7 +28,7 @@ internal static class Line
 {
     internal static readonly string ChannelSecret = Environment.GetEnvironmentVariable("ChannelSecret", EnvironmentVariableTarget.Process);
 
-    internal static bool IsValidRequest(HttpRequestMessage req, out string content)
+    internal static async Task<bool> IsValidRequest(HttpRequestMessage req, TraceWriter log, out string content)
     {
         content = null;
         IEnumerable<string> headers;
@@ -43,13 +43,13 @@ internal static class Line
             return false;
         }
 
-        if (string.IsNullOrEmpty(LineSettings.ChannelSecret))
+        if (string.IsNullOrEmpty(ChannelSecret))
         {
             log.Error("Please set ChannelSecret in App Settings");
             return false;
         }
 
-        var secret = Encoding.UTF8.GetBytes(LineSettings.ChannelSecret);
+        var secret = Encoding.UTF8.GetBytes(ChannelSecret);
         content = await req.Content.ReadAsStringAsync();
         var body = Encoding.UTF8.GetBytes(content);
 
@@ -71,11 +71,11 @@ internal static class Slack
     static readonly string SlackWebhookUrl = Environment.GetEnvironmentVariable("SlackWebhookPath", EnvironmentVariableTarget.Process);
     static readonly HttpClient HttpClient = new HttpClient
     {
-        BaseAddress = "https://hooks.slack.com",
+        BaseAddress = new Uri("https://hooks.slack.com"),
         Timeout = TimeSpan.FromSeconds(10)
     };
 
-    internal static Task Post(string json)
+    internal static Task Post(string json, TraceWriter log)
     {
         if (string.IsNullOrEmpty(SlackWebhookUrl))
         {
