@@ -1,0 +1,9 @@
+﻿{
+  "frameworks": {
+    "net46": {
+      "dependencies": {
+        "Utf8Json": "1.3.5"
+      }
+    }
+  }
+}
