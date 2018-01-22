@@ -13,7 +13,8 @@ using Utf8Json;
 
 public static async Task<string> Run(HttpRequestMessage req, TraceWriter log)
 {
-    if (!Line.IsValidRequest(req))
+    string content;
+    if (!Line.IsValidRequest(req, out content))
     {
         return null;
     }
@@ -27,8 +28,9 @@ internal static class Line
 {
     internal static readonly string ChannelSecret = Environment.GetEnvironmentVariable("ChannelSecret", EnvironmentVariableTarget.Process);
 
-    internal static bool IsValidRequest(HttpRequestMessage req)
+    internal static bool IsValidRequest(HttpRequestMessage req, out string content)
     {
+        content = null;
         IEnumerable<string> headers;
         if (!req.Headers.TryGetValues("X-Line-Signature", out headers))
         {
@@ -48,7 +50,7 @@ internal static class Line
         }
 
         var secret = Encoding.UTF8.GetBytes(LineSettings.ChannelSecret);
-        var content = await req.Content.ReadAsStringAsync();
+        content = await req.Content.ReadAsStringAsync();
         var body = Encoding.UTF8.GetBytes(content);
 
         using (var hmacsha256 = new HMACSHA256(secret))
