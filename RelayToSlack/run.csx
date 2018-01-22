@@ -33,6 +33,8 @@ public static async Task<string> Run(HttpRequestMessage req, TraceWriter log)
         return null;
     }
 
+    log.Info("X-Line-Signature: " + channelSignature);
+
     if (string.IsNullOrEmpty(ChannelSecret))
     {
         log.Error("Please set ChannelSecret in App Settings");
@@ -51,6 +53,8 @@ public static async Task<string> Run(HttpRequestMessage req, TraceWriter log)
             return null;
         }
     }
+
+    log.Info("content: " + content);
 
     if (string.IsNullOrEmpty(SlackWebhookPath))
     {
