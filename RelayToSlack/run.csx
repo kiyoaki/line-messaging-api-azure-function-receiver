@@ -7,11 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.Runtime.Serialization;
-using Utf8;
+using Utf8Json;
 
 public static async Task<string> Run(HttpRequestMessage req, TraceWriter log)
 {
-    if (!req.IsValid())
+    if (!Line.IsValidRequest(req))
     {
         return null;
     }
@@ -25,7 +25,7 @@ internal static class Line
 {
     internal static readonly string ChannelSecret = Environment.GetEnvironmentVariable("ChannelSecret", EnvironmentVariableTarget.Process);
 
-    internal static bool IsValid(this HttpRequestMessage req)
+    internal static bool IsValidRequest(HttpRequestMessage req)
     {
         IEnumerable<string> headers;
         if (!req.Headers.TryGetValues("X-Line-Signature", out headers))
