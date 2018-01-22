@@ -55,7 +55,7 @@ public static async Task<string> Run(HttpRequestMessage req, TraceWriter log)
     if (string.IsNullOrEmpty(SlackWebhookUrl))
     {
         log.Error("Please set SlackWebhookUrl in App Settings");
-        return Task.CompletedTask;
+        return null;
     }
 
     var slackMessage = new SlackMessage
