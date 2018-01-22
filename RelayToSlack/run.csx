@@ -19,7 +19,7 @@ static readonly HttpClient HttpClient = new HttpClient
     Timeout = TimeSpan.FromSeconds(10)
 };
 
-public static async Task<string> Run(HttpRequestMessage req, TraceWriter log)
+public static async Task Run(HttpRequestMessage req, TraceWriter log)
 {
     IEnumerable<string> headers;
     if (!req.Headers.TryGetValues("X-Line-Signature", out headers))
@@ -41,7 +41,7 @@ public static async Task<string> Run(HttpRequestMessage req, TraceWriter log)
 
     var secret = Encoding.UTF8.GetBytes(ChannelSecret);
     var content = await req.Content.ReadAsStringAsync();
-    var body = Encoding.UTF8.GetBytes(content);
+    var body = await req.Content.ReadAsByteArrayAsync();
 
     using (var hmacsha256 = new HMACSHA256(secret))
     {
@@ -63,12 +63,10 @@ public static async Task<string> Run(HttpRequestMessage req, TraceWriter log)
         Text = content
     };
     var serialized = JsonSerializer.ToJsonString(slackMessage);
-    using (var content = new StringContent(serialized))
+    using (var json = new StringContent(serialized))
     {
-        await HttpClient.PostAsync(SlackWebhookUrl, content);
+        await HttpClient.PostAsync(SlackWebhookUrl, json);
     }
-
-    return content;
 }
 
 public class SlackMessage

@@ -5,11 +5,6 @@
       "name": "req",
       "type": "httpTrigger",
       "direction": "in"
-    },
-    {
-      "type": "http",
-      "name": "$return",
-      "direction": "out"
     }
   ],
   "disabled": false
