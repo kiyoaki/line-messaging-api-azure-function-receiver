@@ -54,7 +54,7 @@ public static async Task<string> Run(HttpRequestMessage req, TraceWriter log)
 
     if (string.IsNullOrEmpty(SlackWebhookPath))
     {
-        log.Error("Please set SlackWebhookUrl in App Settings");
+        log.Error("Please set SlackWebhookPath in App Settings");
         return null;
     }
 
@@ -65,7 +65,7 @@ public static async Task<string> Run(HttpRequestMessage req, TraceWriter log)
     var serialized = JsonSerializer.ToJsonString(slackMessage);
     using (var json = new StringContent(serialized))
     {
-        await HttpClient.PostAsync(SlackWebhookUrl, json);
+        await HttpClient.PostAsync(SlackWebhookPath, json);
     }
 
     return content;
