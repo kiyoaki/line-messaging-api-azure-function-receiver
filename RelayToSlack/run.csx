@@ -12,7 +12,7 @@ using System.Runtime.Serialization;
 using Utf8Json;
 
 static readonly string ChannelSecret = Environment.GetEnvironmentVariable("ChannelSecret", EnvironmentVariableTarget.Process);
-static readonly string SlackWebhookUrl = Environment.GetEnvironmentVariable("SlackWebhookPath", EnvironmentVariableTarget.Process);
+static readonly string SlackWebhookPath = Environment.GetEnvironmentVariable("SlackWebhookPath", EnvironmentVariableTarget.Process);
 static readonly HttpClient HttpClient = new HttpClient
 {
     BaseAddress = new Uri("https://hooks.slack.com"),
@@ -52,7 +52,7 @@ public static async Task<string> Run(HttpRequestMessage req, TraceWriter log)
         }
     }
 
-    if (string.IsNullOrEmpty(SlackWebhookUrl))
+    if (string.IsNullOrEmpty(SlackWebhookPath))
     {
         log.Error("Please set SlackWebhookUrl in App Settings");
         return null;
