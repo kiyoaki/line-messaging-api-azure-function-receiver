@@ -60,7 +60,7 @@ public static async Task<string> Run(HttpRequestMessage req, TraceWriter log)
 
     var slackMessage = new SlackMessage
     {
-        Text = content
+        Text = $"```{content}```"
     };
     var serialized = JsonSerializer.ToJsonString(slackMessage);
     using (var json = new StringContent(serialized))
