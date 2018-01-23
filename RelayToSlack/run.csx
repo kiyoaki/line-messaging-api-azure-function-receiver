@@ -22,6 +22,20 @@ static readonly HttpClient HttpClient = new HttpClient
 
 public static async Task<string> Run(HttpRequestMessage req, TraceWriter log)
 {
+    IEnumerable<string> headers;
+    if (!req.Headers.TryGetValues("X-Line-Signature", out headers))
+    {
+        return null;
+    }
+
+    var channelSignature = headers.FirstOrDefault();
+    if (channelSignature == null)
+    {
+        return null;
+    }
+
+    log.Info("X-Line-Signature: " + channelSignature);
+
     if (string.IsNullOrEmpty(ChannelSecret))
     {
         log.Error("Please set ChannelSecret in App Settings");
