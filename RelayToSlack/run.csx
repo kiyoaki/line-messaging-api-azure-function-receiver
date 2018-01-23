@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.Runtime.Serialization;
 using LineMessaging;
+using Newtonsoft.Json;
 
 static readonly string ChannelSecret = Environment.GetEnvironmentVariable("ChannelSecret", EnvironmentVariableTarget.Process);
 static readonly string SlackWebhookPath = Environment.GetEnvironmentVariable("SlackWebhookPath", EnvironmentVariableTarget.Process);
@@ -48,7 +49,7 @@ public static async Task<string> Run(HttpRequestMessage req, TraceWriter log)
     {
         Text = $"```{content}```"
     };
-    var serialized = JsonSerializer.ToJsonString(slackMessage);
+    var serialized = JsonConvert.SerializeObject(slackMessage);
     using (var json = new StringContent(serialized))
     {
         await HttpClient.PostAsync(SlackWebhookPath, json);
