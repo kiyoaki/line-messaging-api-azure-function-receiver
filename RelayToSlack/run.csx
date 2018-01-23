@@ -74,6 +74,6 @@ public static async Task<string> Run(HttpRequestMessage req, TraceWriter log)
 
 public class SlackMessage
 {
-    [DataMember(Name = "text")]
+    [JsonProperty("text")]
     public string Text { get; set; }
 }
