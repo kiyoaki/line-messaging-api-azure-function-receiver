@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.Runtime.Serialization;
-using Utf8Json;
+using LineMessaging;
 
 static readonly string ChannelSecret = Environment.GetEnvironmentVariable("ChannelSecret", EnvironmentVariableTarget.Process);
 static readonly string SlackWebhookPath = Environment.GetEnvironmentVariable("SlackWebhookPath", EnvironmentVariableTarget.Process);
@@ -21,37 +21,19 @@ static readonly HttpClient HttpClient = new HttpClient
 
 public static async Task<string> Run(HttpRequestMessage req, TraceWriter log)
 {
-    IEnumerable<string> headers;
-    if (!req.Headers.TryGetValues("X-Line-Signature", out headers))
-    {
-        return null;
-    }
-
-    var channelSignature = headers.FirstOrDefault();
-    if (channelSignature == null)
-    {
-        return null;
-    }
-
-    log.Info("X-Line-Signature: " + channelSignature);
-
     if (string.IsNullOrEmpty(ChannelSecret))
     {
         log.Error("Please set ChannelSecret in App Settings");
         return null;
     }
 
-    var secret = Encoding.UTF8.GetBytes(ChannelSecret);
-    var content = await req.Content.ReadAsStringAsync();
-    var body = await req.Content.ReadAsByteArrayAsync();
-
-    using (var hmacsha256 = new HMACSHA256(secret))
+    var webhookRequest = new LineWebhookRequest(ChannelSecret, HttpRequestMessage);
+    var valid = await webhookRequest.IsValid();
+    var content = await webhookRequest.GetContentJson();
+    if (!valid)
     {
-        var signature = Convert.ToBase64String(hmacsha256.ComputeHash(body));
-        if (channelSignature != signature)
-        {
-            return null;
-        }
+        log.Error("request is invalid.");
+        return null;
     }
 
     log.Info("content: " + content);
