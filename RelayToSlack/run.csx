@@ -27,7 +27,7 @@ public static async Task<string> Run(HttpRequestMessage req, TraceWriter log)
         return null;
     }
 
-    var webhookRequest = new LineWebhookRequest(ChannelSecret, HttpRequestMessage);
+    var webhookRequest = new LineWebhookRequest(ChannelSecret, req);
     var valid = await webhookRequest.IsValid();
     var content = await webhookRequest.GetContentJson();
     if (!valid)
