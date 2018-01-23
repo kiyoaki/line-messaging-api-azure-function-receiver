@@ -2,7 +2,7 @@
   "frameworks": {
     "net46": {
       "dependencies": {
-        "LineMessaging": "1.1.1",
+        "LineMessaging": "1.1.2",
         "Newtonsoft.Json": "10.0.3"
       }
     }
